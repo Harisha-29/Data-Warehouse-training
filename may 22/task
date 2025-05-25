@@ -1,0 +1,393 @@
+ use trainingdb
+switched to db trainingdb
+trainingdb> db.createCollection("employees")
+{ ok: 1 }
+trainingdb> db.employees.insertMany([
+   {
+     name: "Alice",
+     age: 30,
+     isManager: true,
+     skills: ["JavaScript", "Node.js", "MongoDB"],
+     joiningDate: new Date("2022-01-10"),
+     profile: {
+       linkedin: "https://linkedin.com/in/alice",
+       portfolio: "https://alice.dev"
+     }
+   },
+   {
+     name: "Bob",
+     age: 25,
+     isManager: false,
+     skills: ["Python", "Django"],
+     joiningDate: new Date("2023-03-05"),
+     profile: {
+       linkedin: "https://linkedin.com/in/bob",
+       portfolio: "https://bob.dev"
+     }
+   },
+   {
+     name: "Charlie",
+     age: 28,
+     isManager: false,
+     skills: ["Java", "Spring", "Hibernate", "Docker"],
+     joiningDate: new Date("2021-11-15"),
+     profile: {
+       linkedin: "https://linkedin.com/in/charlie",
+       portfolio: "https://charlie.dev"
+     }
+   },
+   {
+     name: "Diana",
+     age: 35,
+     isManager: true,
+     skills: ["Go", "Kubernetes", "Cloud"],
+     joiningDate: new Date("2022-06-20"),
+     profile: {
+       linkedin: "https://linkedin.com/in/diana",
+       portfolio: "https://diana.dev"
+     }
+   }
+ ])
+ 
+{
+  acknowledged: true,
+  insertedIds: {
+    '0': ObjectId('6832865d5383fd4f746c4bd0'),
+    '1': ObjectId('6832865d5383fd4f746c4bd1'),
+    '2': ObjectId('6832865d5383fd4f746c4bd2'),
+    '3': ObjectId('6832865d5383fd4f746c4bd3')
+  }
+}
+trainingdb> db.employees.find({
+   skills: { $size: { $gt: 2 } },
+   joiningDate: { $gt: new Date("2022-01-01") }
+ })
+
+
+
+ db.employees.find({
+   $expr: { $gt: [{ $size: "$skills" }, 2] },
+   joiningDate: { $gt: new Date("2022-01-01") }
+ })
+[
+  {
+    _id: ObjectId('6832865d5383fd4f746c4bd0'),
+    name: 'Alice',
+    age: 30,
+    isManager: true,
+    skills: [ 'JavaScript', 'Node.js', 'MongoDB' ],
+    joiningDate: ISODate('2022-01-10T00:00:00.000Z'),
+    profile: {
+      linkedin: 'https://linkedin.com/in/alice',
+      portfolio: 'https://alice.dev'
+    }
+  },
+  {
+    _id: ObjectId('6832865d5383fd4f746c4bd3'),
+    name: 'Diana',
+    age: 35,
+    isManager: true,
+    skills: [ 'Go', 'Kubernetes', 'Cloud' ],
+    joiningDate: ISODate('2022-06-20T00:00:00.000Z'),
+    profile: {
+      linkedin: 'https://linkedin.com/in/diana',
+      portfolio: 'https://diana.dev'
+    }
+  }
+]
+trainingdb> db.employees.updateOne(
+   { name: "Alice" },
+   { $set: { rating: 4.5 } }
+ )
+
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 1,
+  modifiedCount: 1,
+  upsertedCount: 0
+}
+trainingdb> db.employees.find({
+   rating: { $type: "double" }
+ })
+
+[
+  {
+    _id: ObjectId('6832865d5383fd4f746c4bd0'),
+    name: 'Alice',
+    age: 30,
+    isManager: true,
+    skills: [ 'JavaScript', 'Node.js', 'MongoDB' ],
+    joiningDate: ISODate('2022-01-10T00:00:00.000Z'),
+    profile: {
+      linkedin: 'https://linkedin.com/in/alice',
+      portfolio: 'https://alice.dev'
+    },
+    rating: 4.5
+  }
+]
+trainingdb> db.employees.find(
+   {},
+   { _id: 0, name: 1, skills: 1 }
+ )
+
+[
+  { name: 'Alice', skills: [ 'JavaScript', 'Node.js', 'MongoDB' ] },
+  { name: 'Bob', skills: [ 'Python', 'Django' ] },
+  {
+    name: 'Charlie',
+    skills: [ 'Java', 'Spring', 'Hibernate', 'Docker' ]
+  },
+  { name: 'Diana', skills: [ 'Go', 'Kubernetes', 'Cloud' ] }
+]
+trainingdb> // SECTION : 2 //
+
+trainingdb> use schooldb
+switched to db schooldb
+schooldb> db.createCollection("collection")
+{ ok: 1 }
+schooldb> db.students.insertMany([
+   {
+     name: "Emma",
+     guardian: 
+    {     name: "Sarah",
+       phone: "1234567890",
+       relation: "Mother"
+     }
+   },
+   {
+     name: "Liam",
+     guardian: {
+       name: "David",
+       phone: "2345678901",
+       relation: "Father"
+     }
+   },
+   {
+     name: "Sophia",
+     guardian: {
+       name: "Mary",
+       phone: "3456789012",
+       relation: "Mother"
+     }
+   }
+ ])
+
+{
+  acknowledged: true,
+  insertedIds: {
+    '0': ObjectId('683287415383fd4f746c4bd4'),
+    '1': ObjectId('683287415383fd4f746c4bd5'),
+    '2': ObjectId('683287415383fd4f746c4bd6')
+  }
+}
+schooldb> db.students.find({ "guardian.relation": "Mother" })
+[
+  {
+    _id: ObjectId('683287415383fd4f746c4bd4'),
+    name: 'Emma',
+    guardian: { name: 'Sarah', phone: '1234567890', relation: 'Mother' }
+  },
+  {
+    _id: ObjectId('683287415383fd4f746c4bd6'),
+    name: 'Sophia',
+    guardian: { name: 'Mary', phone: '3456789012', relation: 'Mother' }
+  }
+]
+schooldb> db.students.updateOne(
+   { name: "Emma" },
+   { $set: { "guardian.phone": "1112223333" } }
+ )
+
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 1,
+  modifiedCount: 1,
+  upsertedCount: 0
+}
+schooldb> // Section 3: //
+
+schooldb> db.createCollection("teachers")
+{ ok: 1 }
+schooldb> db.teachers.insertMany([
+   {
+     name: "Mr. Smith",
+     classes: ["Math", "Physics"]
+   },
+   {
+     name: "Mrs. Johnson",
+     classes: ["Chemistry", "Biology"]
+   }
+ ])
+
+{
+  acknowledged: true,
+  insertedIds: {
+    '0': ObjectId('683287b05383fd4f746c4bd7'),
+    '1': ObjectId('683287b05383fd4f746c4bd8')
+  }
+}
+schooldb> db.teachers.find({ classes: "Physics" })
+[
+  {
+    _id: ObjectId('683287b05383fd4f746c4bd7'),
+    name: 'Mr. Smith',
+    classes: [ 'Math', 'Physics' ]
+  }
+]
+schooldb> db.teachers.updateOne(
+   { name: "Mr. Smith" },
+   { $addToSet: { classes: "Robotics" } }
+ )
+
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 1,
+  modifiedCount: 1,
+  upsertedCount: 0
+}
+schooldb> db.teachers.updateOne(
+   { name: "Mr. Smith" },
+   { $pull: { classes: "Math" } }
+ )
+
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 1,
+  modifiedCount: 1,
+  upsertedCount: 0
+}
+schooldb> // SECTION : 4 //
+
+schooldb> use academia
+switched to db academia
+academia> db.createCollection("courses")
+{ ok: 1 }
+academia> db.courses.insertMany([
+   { _id: ObjectId("6651c0011111111111111111"), title: "Machine Learning", credits: 4 },
+   { _id: ObjectId("6651c0012222222222222222"), title: "Data Structures", credits: 3 }
+ ])
+
+{
+  acknowledged: true,
+  insertedIds: {
+    '0': ObjectId('6651c0011111111111111111'),
+    '1': ObjectId('6651c0012222222222222222')
+  }
+}
+academia> db.students.insertMany([
+   { name: "John", enrolledCourse: ObjectId("6651c0011111111111111111") },
+   { name: "Alice", enrolledCourse: ObjectId("6651c0012222222222222222") }
+ ])
+ 
+{
+  acknowledged: true,
+  insertedIds: {
+    '0': ObjectId('683288335383fd4f746c4bd9'),
+    '1': ObjectId('683288335383fd4f746c4bda')
+  }
+}
+academia> db.students.find({ enrolledCourse: ObjectId("6651c0011111111111111111") })
+[
+  {
+    _id: ObjectId('683288335383fd4f746c4bd9'),
+    name: 'John',
+    enrolledCourse: ObjectId('6651c0011111111111111111')
+  }
+]
+academia> db.courses.find({ _id: ObjectId("6651c0011111111111111111") })
+[
+  {
+    _id: ObjectId('6651c0011111111111111111'),
+    title: 'Machine Learning',
+    credits: 4
+  }
+]
+academia> // Section 5: //
+
+academia> use academia
+already on db academia
+academia> db.students.aggregate([
+   {
+     $lookup: {
+       from: "courses",
+       localField: "enrolledCourse",
+       foreignField: "_id",
+       as: "courseDetails"
+     }
+   }
+ ])
+
+[
+  {
+    _id: ObjectId('683288335383fd4f746c4bd9'),
+    name: 'John',
+    enrolledCourse: ObjectId('6651c0011111111111111111'),
+    courseDetails: [
+      {
+        _id: ObjectId('6651c0011111111111111111'),
+        title: 'Machine Learning',
+        credits: 4
+      }
+    ]
+  },
+  {
+    _id: ObjectId('683288335383fd4f746c4bda'),
+    name: 'Alice',
+    enrolledCourse: ObjectId('6651c0012222222222222222'),
+    courseDetails: [
+      {
+        _id: ObjectId('6651c0012222222222222222'),
+        title: 'Data Structures',
+        credits: 3
+      }
+    ]
+  }
+]
+academia> db.students.aggregate([
+   {
+     $lookup: {
+       from: "courses",
+       localField: "enrolledCourse",
+       foreignField: "_id",
+       as: "courseDetails"
+     }
+   },
+   {
+     $project: {
+       _id: 0,
+       name: 1,
+       courseTitle: { $arrayElemAt: ["$courseDetails.title", 0] }
+     }
+     }
+ ])
+
+[
+  { name: 'John', courseTitle: 'Machine Learning' },
+  { name: 'Alice', courseTitle: 'Data Structures' }
+]
+academia> db.students.aggregate([
+   {
+     $lookup: {
+       from: "courses",
+       localField: "enrolledCourse",
+       foreignField: "_id",
+       as: "courseDetails"
+     }
+   },
+   {
+     $match: { "courseDetails.title": "Machine Learning" }
+   },
+   {
+     $project: {
+       _id: 0,
+       name: 1,
+       courseTitle: { $arrayElemAt: ["$courseDetails.title", 0] }
+     }
+   }
+ ])
+
+[ { name: 'John', courseTitle: 'Machine Learning' } ]
