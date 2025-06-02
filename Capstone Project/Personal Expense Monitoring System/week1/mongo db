@@ -1,1 +1,27 @@
 
+test> use expense_monitoring
+switched to db expense_monitoring
+expense_monitoring> db.createCollection("receipts")
+{ ok: 1 }
+expense_monitoring> db.receipts.insertOne({
+...   user_id: 1,
+...   note: "Paid with cash at local store",
+...   receipt_image: "base64-encoded-image-or-path.jpg",
+...   tags: ["groceries", "cash"],
+...   date: ISODate("2025-05-10T00:00:00Z"),
+...   vendor: "Walmart",
+...   amount: 120.50
+... });
+...
+{
+  acknowledged: true,
+  insertedId: ObjectId('683d3b28a5bd8e2cae6c4bd0')
+}
+expense_monitoring> // Index on user_id
+... db.receipts.createIndex({ user_id: 1 });
+...
+... // Index on receipt_image
+... db.receipts.createIndex({ receipt_image: 1 });
+...
+... // Optional: Index on date
+... db.receipts.createIndex({ date: -1 });
