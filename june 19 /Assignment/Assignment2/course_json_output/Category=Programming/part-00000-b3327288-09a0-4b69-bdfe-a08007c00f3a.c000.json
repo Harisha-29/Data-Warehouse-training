@@ -1,0 +1,2 @@
+{"EnrollID":"E001","UserID":"U001","CourseID":"C001","CourseName":"Python Basics","EnrollDate":"2024-04-01","CompletionDate":"2024-04-10","ProgressPercent":100,"Rating":4,"DaysToComplete":9,"EngagementScore":400,"NextCourse":"ML with PySpark"}
+{"EnrollID":"E004","UserID":"U003","CourseID":"C001","CourseName":"Python Basics","EnrollDate":"2024-04-04","CompletionDate":"2024-04-20","ProgressPercent":100,"Rating":5,"DaysToComplete":16,"EngagementScore":500}
