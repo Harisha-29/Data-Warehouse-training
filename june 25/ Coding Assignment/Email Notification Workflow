@@ -1,0 +1,35 @@
+from airflow import DAG
+from airflow.operators.python import PythonOperator
+from airflow.operators.email import EmailOperator
+from airflow.utils.dates import days_ago
+import os
+
+def task1():
+    print("First task running...")
+
+def task2():
+    print("Second task running...")
+
+with DAG(
+    dag_id="email_notification_workflow",
+    start_date=days_ago(1),
+    schedule_interval="@once",
+    catchup=False,
+    default_args={
+        'email': [os.getenv("AIRFLOW_RECIPIENT_EMAIL", "your_email@example.com")],
+        'email_on_failure': True,
+        'email_on_retry': False,
+    }
+) as dag:
+
+    t1 = PythonOperator(task_id="task_1", python_callable=task1)
+    t2 = PythonOperator(task_id="task_2", python_callable=task2)
+
+    success_email = EmailOperator(
+        task_id="success_email",
+        to="{{ var.value.email_recipient }}",
+        subject="DAG Success: {{ dag.dag_id }}",
+        html_content="All tasks completed successfully!"
+    )
+
+    t1 >> t2 >> success_email
