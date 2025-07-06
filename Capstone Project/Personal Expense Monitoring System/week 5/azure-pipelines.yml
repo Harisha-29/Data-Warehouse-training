@@ -1,0 +1,37 @@
+trigger: none          
+schedules:
+  - cron: "30 0 * * 1"
+    displayName: Weekly run (Mon 06:00 IST)
+    branches: { include: [ master ] }
+    always: true
+
+  - cron: "45 0 1 * *"
+    displayName: Month‑start run
+    branches: { include: [ master ] }
+    always: true
+
+pool:
+  # If you received the “no hosted parallelism” error,
+  # replace vmImage with your self‑hosted pool name, e.g.:
+  # name: Default
+  vmImage: "ubuntu-latest"
+
+variables:
+  PYTHON_VERSION: "3.x"
+
+steps:
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: $(PYTHON_VERSION)
+
+- script: |
+    python -m pip install --upgrade pip
+    pip install -r requirements.txt
+  displayName: "Install dependencies"
+
+- script: python expense_analysis.py
+  displayName: "Run expense analysis"
+
+- publish: monthly_summary.csv       
+  artifact: summary-report
+  displayName: "Publish CSV report"
