@@ -1,0 +1,10 @@
+user_id,date,category,amount
+U01,2025-06-05,Food,1200
+U01,2025-06-12,Travel,1800
+U01,2025-06-28,Shopping,2500
+U02,2025-06-07,Bills,3000
+U02,2025-06-18,Electronics,3780
+U03,2025-06-10,Groceries,800
+U03,2025-06-22,Entertainment,900
+U01,2025-07-02,Food,1000
+U02,2025-07-03,Travel,2000
